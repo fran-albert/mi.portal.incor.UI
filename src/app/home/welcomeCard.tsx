@@ -14,6 +14,7 @@ import { FaHeartbeat, FaSmile } from "react-icons/fa";
 interface User {
   email: string;
   token: string;
+  id: number;
 }
 
 interface WelcomeCardComponentProps {
