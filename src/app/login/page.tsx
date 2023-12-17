@@ -5,14 +5,32 @@ import { useRouter } from "next/navigation";
 import { Input, Button, Divider, Checkbox } from "@nextui-org/react";
 import { EyeFilledIcon } from "../../components/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../components/EyeSlashFilledIcon";
-import { FaCheckCircle } from "react-icons/fa";
 
 function LoginPage() {
-  // const [error, setError] = useState();
-  // const router = useRouter();
-  // const { data: session } = useSession();
+  const [errors, setErrors] = useState<string[]>([]);
+  const [email, setEmail] = useState("test2@gmail.com");
+  const [password, setPassword] = useState("43282913");
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrors([]);
+
+    const responseNextAuth = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (responseNextAuth?.error) {
+      setErrors(responseNextAuth.error.split(","));
+      return;
+    }
+
+    router.push("/home");
+  };
 
   // useEffect(() => {
   //   if (session?.user) {
@@ -20,27 +38,11 @@ function LoginPage() {
   //   }
   // }, [session, router]);
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   const formData = new FormData(e.currentTarget);
-  //   const res = await signIn("credentials", {
-  //     redirect: false,
-  //     email: formData.get("email"),
-  //     password: formData.get("password"),
-  //   });
-
-  //   if (res?.error) {
-  //     return setError(res.error);
-  //   }
-
-  //   if (res?.ok) return router.push("/home");
-  // };
   return (
     <>
       <div className="flex items-start justify-center p-2">
         <div className="bg-gray-100 p-4 md:p-14 rounded-lg shadow-md w-full md:max-w-lg">
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <h1 className="text-lg md:text-2xl font-bold text-center">
               Iniciar Sesión
             </h1>
@@ -53,6 +55,8 @@ function LoginPage() {
                 label="Correo Electrónico"
                 required
                 variant="faded"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="Ingrese su correo electrónico"
                 classNames={{
                   label: "text-black/50 ",
@@ -77,6 +81,8 @@ function LoginPage() {
                 name="password"
                 required
                 placeholder="Ingrese su contraseña"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 variant="faded"
                 classNames={{
                   label: "text-black/50 ",
@@ -108,7 +114,15 @@ function LoginPage() {
                 type={isVisible ? "text" : "password"}
               />
             </div>
-            {/* {error && <div className="text-red-500 pb-4">{error}</div>} */}
+            {errors.length > 0 && (
+              <div className="alert alert-danger mt-2">
+                <ul className="mb-0 text-red-500">
+                  {errors.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <Checkbox defaultSelected radius="md">
               Recordarme
