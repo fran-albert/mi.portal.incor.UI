@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Incor Centro Médico",
 };
 
-const nunito = Nunito({
+const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   style: ["normal", "italic"],
   subsets: ["latin"],
@@ -27,7 +27,7 @@ export default function RootLayout({
         rel="icon"
         href="https://incor-ranking.s3.us-east-1.amazonaws.com/storage/images/iso-incor-web.png"
       />
-      <body className={nunito.className}>
+      <body className={roboto.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
