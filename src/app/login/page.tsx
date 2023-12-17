@@ -12,6 +12,7 @@ function LoginPage() {
   const [password, setPassword] = useState("43282913");
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
+  const { data: session } = useSession();
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,11 +33,11 @@ function LoginPage() {
     router.push("/home");
   };
 
-  // useEffect(() => {
-  //   if (session?.user) {
-  //     router.push("/home");
-  //   }
-  // }, [session, router]);
+  useEffect(() => {
+    if (session?.user) {
+      router.push("/home");
+    }
+  }, [session, router]);
 
   return (
     <>
