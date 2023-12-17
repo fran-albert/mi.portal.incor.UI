@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import SessionAuthProvider from "@/context/SessionAuthProviders";
 
 export const metadata: Metadata = {
   title: "Incor - Mi Portal",
@@ -28,7 +29,9 @@ export default function RootLayout({
         href="https://incor-ranking.s3.us-east-1.amazonaws.com/storage/images/iso-incor-web.png"
       />
       <body className={roboto.className}>
-        <Providers>{children}</Providers>
+        <SessionAuthProvider>
+          <Providers>{children}</Providers>
+        </SessionAuthProvider>
       </body>
     </html>
   );
