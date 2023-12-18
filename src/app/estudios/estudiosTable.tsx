@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useCustomSession } from "@/context/SessionAuthProviders";
 import { FaFilePdf } from "react-icons/fa";
 import { formatDate } from "@/common/Utils";
 import LoadingPage from "@/components/Loading";
@@ -26,41 +26,38 @@ interface Estudio {
 
 export default function EstudiosTable() {
   const [estudios, setEstudios] = useState<Estudio[]>([]);
-  const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [totalEstudios, setTotalEstudios] = useState(0);
   const itemsPorPagina = 10;
   const [paginaActual, setPaginaActual] = useState(1);
   const [estudiosMostrados, setEstudiosMostrados] = useState<Estudio[]>([]);
   const totalPages = Math.ceil(totalEstudios / itemsPorPagina);
-  const idUser = session?.user && 'id' in session.user ? session.user.id : null;
+  const { session } = useCustomSession();
 
   useEffect(() => {
     setIsLoading(true);
 
     async function fetchData() {
-      if (idUser) {
-        try {
-          const res = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${idUser}`,
-            {
-              headers: {
-                Authorization: `Bearer ${session?.user?.token}`,
-              },
-            }
-          );
-          setEstudios(res.data.labs);
-          setTotalEstudios(res.data.labs.length);
-          setIsLoading(false);
-        } catch (error) {
-          console.error(error);
-          setIsLoading(false);
-        }
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${session?.user?.token}`,
+            },
+          }
+        );
+        setEstudios(res.data.labs);
+        setTotalEstudios(res.data.labs.length);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
       }
     }
 
     fetchData();
-  }, [idUser, session?.user?.token]);
+  }, [session?.user?.token]);
 
   useEffect(() => {
     const indiceDelUltimoEstudio = paginaActual * itemsPorPagina;
