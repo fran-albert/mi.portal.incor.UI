@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { Input, Button, Divider, Checkbox } from "@nextui-org/react";
 import { EyeFilledIcon } from "../../components/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../components/EyeSlashFilledIcon";
+import SideBar from "@/components/SideBar";
 
 function LoginPage() {
   const [errors, setErrors] = useState<string[]>([]);
-  const [email, setEmail] = useState("test2@gmail.com");
+  const [email, setEmail] = useState("fraan@gmail.com");
   const [password, setPassword] = useState("43282913");
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
@@ -41,7 +42,8 @@ function LoginPage() {
 
   return (
     <>
-      <div className="flex items-start justify-center p-2">
+    <SideBar />
+      <div className="flex items-start justify-center p-2 mt-40">
         <div className="bg-gray-100 p-4 md:p-14 rounded-lg shadow-md w-full md:max-w-lg">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <h1 className="text-lg md:text-2xl font-bold text-center">

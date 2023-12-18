@@ -8,8 +8,9 @@ import {
   Avatar,
   Image,
 } from "@nextui-org/react";
-import { useSession } from "next-auth/react";
+import { useCustomSession } from "@/context/SessionAuthProviders";
 import { FaHeartbeat, FaSmile } from "react-icons/fa";
+import axios from "axios";
 
 interface User {
   email: string;
@@ -27,37 +28,29 @@ interface Profile {
   photo?: string;
 }
 const WelcomeCardComponent: React.FC<WelcomeCardComponentProps> = () => {
-  const { data: session } = useSession();
+  const { session } = useCustomSession();
   const [profile, setProfile] = useState<Profile>({});
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (session) {
-      getProfile();
-    }
-  }, [session]);
-
-  const getProfile = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${session?.user?.token}`,
-          },
-        }
-      );
-      if (!res.ok) {
-        throw new Error("Failed to fetch profile");
+    async function fetchData() {
+      try {
+        const res = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${session?.user?.token}`,
+            },
+          }
+        );
+        setProfile(res.data);
+      } catch (error) {
+        console.error(error);
       }
-      const data = await res.json();
-      setProfile(data);
-    } catch (error) {
-      setError("Error fetching profile");
     }
-  };
+
+    fetchData();
+  }, [session?.user?.token]);
+
   return (
     <>
       <div className="flex justify-center items-center mx-4 sm:mx-auto">
