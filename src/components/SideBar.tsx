@@ -28,7 +28,7 @@ export default function SideBar() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/");
     } else if (session?.user?.token) {
       const decoded = jwtDecode<MyTokenPayload>(session.user.token);
       setUserRoles(decoded.roles || []);

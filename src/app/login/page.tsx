@@ -42,8 +42,7 @@ function LoginPage() {
 
   return (
     <>
-    <SideBar />
-      <div className="flex items-start justify-center p-2 mt-40">
+      <div className="flex items-start justify-center p-2">
         <div className="bg-gray-100 p-4 md:p-14 rounded-lg shadow-md w-full md:max-w-lg">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <h1 className="text-lg md:text-2xl font-bold text-center">
