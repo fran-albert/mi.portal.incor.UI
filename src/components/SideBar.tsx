@@ -9,10 +9,11 @@ import {
   FaUserLock,
   FaHome,
 } from "react-icons/fa";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { FiLogOut } from "react-icons/fi";
+import { useCustomSession } from "@/context/SessionAuthProviders";
 
 interface MyTokenPayload {
   roles: string[];
@@ -23,14 +24,16 @@ export default function SideBar() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
-  const { data: session } = useSession();
+  const { session, status } = useCustomSession();
 
   useEffect(() => {
-    if (session?.user?.token) {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    } else if (session?.user?.token) {
       const decoded = jwtDecode<MyTokenPayload>(session.user.token);
       setUserRoles(decoded.roles || []);
     }
-  }, [session?.user?.token]);
+  }, [session, status, router]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
