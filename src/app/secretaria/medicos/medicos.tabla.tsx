@@ -15,50 +15,43 @@ import axios from "axios";
 import Paginacion from "@/components/Pagination";
 import LoadingPage from "@/components/Loading";
 import { formatearDNI } from "@/common/Utils";
-import { AiFillFileAdd, AiFillDelete } from "react-icons/ai";
-import { FaUserEdit, FaFilePdf } from "react-icons/fa";
-import { MdAddCircle, MdCreate, MdDelete } from "react-icons/md";
+import { FaUserEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import Filter from "@/components/Filter";
-import DeletePatientModal from "./deletePatient";
-import NewPatientModal from "./newPatient";
-import AddModalLabs from "./addLabs";
+import DeleteDoctorModal from "./eliminar.medico.";
+import NewPatientModal from "./nuevo.medico";
 import { IUser } from "@/common/interfaces/user.interface";
 
-const PacientesTabla = () => {
-  const [pacientes, setPacientes] = useState<IUser[]>([]);
-  const [selectedPaciente, setSelectedPaciente] = useState<IUser | null>(
-    null
-  );
-  const [totalPatients, setTotalPatients] = useState<number>(0);
+const MedicosTabla = () => {
+  const [doctors, setDoctors] = useState<IUser[]>([]);
+  const [selectedDoctor, setSelectedDoctor] = useState<IUser | null>(null);
+  const [totalDoctors, setTotalDoctors] = useState<number>(0);
   const [filtro, setFiltro] = useState<string>("");
   const itemsPorPagina = 8;
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [paginaActual, setPaginaActual] = useState<number>(1);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
-  const [pacientesMostrados, setPacientesMostrados] = useState<IUser[]>([]);
-  const [isModalOpenLabs, setIsModalOpenLabs] = useState<boolean>(false);
-  const totalPages = Math.ceil(totalPatients / itemsPorPagina);
+  const [shownDoctors, setShownDoctors] = useState<IUser[]>([]);
+  const totalPages = Math.ceil(totalDoctors / itemsPorPagina);
   const [showMessageNotFound, setShowMessageNotFound] =
     useState<boolean>(false);
   const { session } = useCustomSession();
 
   useEffect(() => {
-    setIsLoading(true);
-
     async function fetchData() {
       try {
         const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/patients`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/doctors`,
           {
             headers: {
               Authorization: `Bearer ${session?.user?.token}`,
             },
           }
         );
-        setPacientes(res.data);
-        setTotalPatients(res.data.length);
+        setDoctors(res.data);
+        setTotalDoctors(res.data.length);
         setIsLoading(false);
       } catch (error) {
         console.error(error);
@@ -69,14 +62,12 @@ const PacientesTabla = () => {
     fetchData();
   }, [session?.user?.token]);
 
-  const onLaboratorioAddedDummy = (data: any) => {};
-
-  const addPacienteToList = (newPaciente: IUser) => {
-    setPacientes([...pacientes, newPaciente]);
+  const adddoctorToList = (newdoctor: IUser) => {
+    setDoctors([...doctors, newdoctor]);
   };
 
-  const removePacienteFromList = (idPaciente: number) => {
-    setPacientes(pacientes.filter((p) => p.id !== idPaciente));
+  const removedoctorFromList = (iddoctor: number) => {
+    setDoctors(doctors.filter((p) => p.id !== iddoctor));
   };
 
   const handleModalOpen = () => {
@@ -87,8 +78,8 @@ const PacientesTabla = () => {
     setIsModalOpen(false);
   };
 
-  const handleModalOpenDelete = (paciente: IUser) => {
-    setSelectedPaciente(paciente);
+  const handleModalOpenDelete = (doctor: IUser) => {
+    setSelectedDoctor(doctor);
     setIsModalOpenDelete(true);
   };
 
@@ -96,40 +87,31 @@ const PacientesTabla = () => {
     setIsModalOpenDelete(false);
   };
 
-  const handleModalOpenLabs = (paciente: IUser) => {
-    setSelectedPaciente(paciente);
-    setIsModalOpenLabs(true);
-  };
-
-  const closeModalLabs = () => {
-    setIsModalOpenLabs(false);
-  };
-
   useEffect(() => {
-    const indiceDelUltimoPaciente = paginaActual * itemsPorPagina;
-    const indiceDelPrimerPaciente = indiceDelUltimoPaciente - itemsPorPagina;
+    const indiceDelUltimodoctor = paginaActual * itemsPorPagina;
+    const indiceDelPrimerdoctor = indiceDelUltimodoctor - itemsPorPagina;
 
-    const pacientesFiltrados = pacientes.filter((paciente) => {
+    const filteredDoctors = doctors.filter((doctors) => {
       return (
-        paciente.name?.toLowerCase().includes(filtro.toLowerCase()) ||
-        paciente.lastname?.toLowerCase().includes(filtro.toLowerCase()) ||
-        String(paciente.dni).includes(filtro) ||
-        paciente.email?.toLowerCase().includes(filtro.toLowerCase())
+        doctors.name?.toLowerCase().includes(filtro.toLowerCase()) ||
+        doctors.lastname?.toLowerCase().includes(filtro.toLowerCase()) ||
+        String(doctors.dni).includes(filtro) ||
+        doctors.email?.toLowerCase().includes(filtro.toLowerCase())
       );
     });
 
-    setTotalPatients(pacientesFiltrados.length);
+    setTotalDoctors(filteredDoctors.length);
 
-    if (pacientesFiltrados.length === 0) {
+    if (filteredDoctors.length === 0) {
       setShowMessageNotFound(true);
     } else {
       setShowMessageNotFound(false);
     }
 
-    setPacientesMostrados(
-      pacientesFiltrados.slice(indiceDelPrimerPaciente, indiceDelUltimoPaciente)
+    setShownDoctors(
+      filteredDoctors.slice(indiceDelPrimerdoctor, indiceDelUltimodoctor)
     );
-  }, [filtro, paginaActual, pacientes]);
+  }, [filtro, paginaActual, doctors]);
 
   const handleFiltroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFiltro(e.target.value);
@@ -145,8 +127,8 @@ const PacientesTabla = () => {
       label: "#",
     },
     {
-      key: "paciente",
-      label: "PACIENTE",
+      key: "medico",
+      label: "MEDICO",
     },
     {
       key: "dni",
@@ -167,7 +149,7 @@ const PacientesTabla = () => {
   ];
 
   if (isLoading) {
-    return <LoadingPage props={"Cargando pacientes..."} />;
+    return <LoadingPage props={"Cargando médicos..."} />;
   }
 
   return (
@@ -175,28 +157,29 @@ const PacientesTabla = () => {
       <div className="flex flex-col sm:flex-row items-center pb-4">
         <div className="flex-grow pr-1">
           <Filter
-            placeholder="Buscar pacientes..."
+            placeholder="Buscar médicos..."
             onFilterChange={handleFiltroChange}
           />
         </div>
+
         <Button onPress={handleModalOpen} className="bg-teal-500 m-1">
-          Nuevo Paciente
+          Nuevo Médico
         </Button>
       </div>
       {showMessageNotFound && (
         <div className="text-center py-4">
           <span className="text-gray-600">
-            No se encontraron pacientes con ese criterio de búsqueda.
+            No se encontraron médicos con ese criterio de búsqueda.
           </span>
         </div>
       )}
       {!showMessageNotFound && (
         <Table
-          aria-label="Pacientes"
+          aria-label="Médicos"
           bottomContent={
             <div className="flex w-full justify-center">
               <Paginacion
-                totalItems={totalPatients}
+                totalItems={totalDoctors}
                 itemsPerPage={itemsPorPagina}
                 currentPage={paginaActual}
                 total={totalPages}
@@ -215,9 +198,9 @@ const PacientesTabla = () => {
             )}
           </TableHeader>
           <TableBody>
-            {pacientesMostrados.map((paciente, index) => (
+            {shownDoctors.map((doctor, index) => (
               <TableRow
-                key={paciente.id}
+                key={doctor.id}
                 className="transition-all hover:bg-gray-100"
               >
                 <TableCell className="py-3 text-gray-900 text-base">
@@ -225,41 +208,33 @@ const PacientesTabla = () => {
                 </TableCell>
                 <TableCell className="whitespace-nowrap font-medium text-gray-900 py-3 text-base">
                   <User
-                    name={`${paciente.lastname}, ${paciente.name}`}
-                    description={paciente.email}
+                    name={`${doctor.lastname}, ${doctor.name}`}
+                    description={doctor.email}
                     avatarProps={{
-                      src: paciente.photo
-                        ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${paciente.photo}.jpeg`
+                      src: doctor.photo
+                        ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${doctor.photo}.jpeg`
                         : "https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/default.png",
                     }}
                   />
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base">
-                  {formatearDNI(paciente.dni)}
+                  {formatearDNI(doctor.dni)}
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base">
-                  {paciente.phone}
+                  {doctor.phone}
                 </TableCell>
-                <TableCell>{paciente.city.city}</TableCell>
+                <TableCell>{doctor.city.city}</TableCell>
                 <TableCell className="py-3 text-gray-900 text-base">
                   <div className="relative flex justify-around items-center gap-1">
-                    <Tooltip content="Agregar laboratorio">
-                      <span className="text-3xl text-default-400 cursor-pointer active:opacity-50">
-                        <AiFillFileAdd
-                          color="#0d9488"
-                          onClick={() => handleModalOpenLabs(paciente)}
-                        />
-                      </span>
-                    </Tooltip>
-                    <Tooltip content="Editar paciente">
+                    <Tooltip content="Editar médico">
                       <span className="text-3xl text-default-400 cursor-pointer active:opacity-50">
                         <FaUserEdit />
                       </span>
                     </Tooltip>
-                    <Tooltip color="danger" content="Eliminar paciente">
+                    <Tooltip color="danger" content="Eliminar médico">
                       <span className="text-3xl text-danger cursor-pointer active:opacity-50">
                         <MdDelete
-                          onClick={() => handleModalOpenDelete(paciente)}
+                          onClick={() => handleModalOpenDelete(doctor)}
                         />
                       </span>
                     </Tooltip>
@@ -270,25 +245,19 @@ const PacientesTabla = () => {
           </TableBody>
         </Table>
       )}
-      <AddModalLabs
-        isOpen={isModalOpenLabs}
-        onOpenChange={closeModalLabs}
-        paciente={selectedPaciente}
-        onLaboratorioAdded={onLaboratorioAddedDummy}
-      />
-      <DeletePatientModal
+      <DeleteDoctorModal
         isOpen={isModalOpenDelete}
         onOpenChange={closeModalDelete}
-        paciente={selectedPaciente}
-        onPacienteRemoved={removePacienteFromList}
+        doctor={selectedDoctor}
+        onDoctorRemoved={removedoctorFromList}
       />
       <NewPatientModal
         isOpen={isModalOpen}
         onOpenChange={closeModal}
-        onAddPaciente={addPacienteToList}
+        onAddDoctor={adddoctorToList}
       />
     </div>
   );
 };
 
-export default PacientesTabla;
+export default MedicosTabla;
