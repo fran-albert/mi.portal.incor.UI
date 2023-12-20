@@ -39,18 +39,18 @@ export default function DeleteDoctorModal({
         }
       );
       if (response.status === 200) {
-        toast.success("Paciente eliminado con éxito!");
+        toast.success("Medico eliminado con éxito!");
         onCloseModal();
         if (onDoctorRemoved) {
           onDoctorRemoved(doctor.id);
         }
       } else {
         console.error("Error response from server:", response);
-        toast.error("Ocurrió un error al eliminar el paciente.");
+        toast.error("Ocurrió un error al eliminar el medico.");
       }
     } catch (error) {
       console.error("Exception caught:", error);
-      toast.error("Ocurrió un error al eliminar el paciente.");
+      toast.error("Ocurrió un error al eliminar el medico.");
     }
   };
 

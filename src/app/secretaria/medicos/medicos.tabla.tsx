@@ -20,7 +20,7 @@ import { MdDelete } from "react-icons/md";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import Filter from "@/components/Filter";
 import DeleteDoctorModal from "./eliminar.medico.";
-import NewPatientModal from "./nuevo.medico";
+import NewDoctorModal from "./nuevo.medico";
 import { IUser } from "@/common/interfaces/user.interface";
 
 const MedicosTabla = () => {
@@ -251,7 +251,7 @@ const MedicosTabla = () => {
         doctor={selectedDoctor}
         onDoctorRemoved={removedoctorFromList}
       />
-      <NewPatientModal
+      <NewDoctorModal
         isOpen={isModalOpen}
         onOpenChange={closeModal}
         onAddDoctor={adddoctorToList}

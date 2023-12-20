@@ -19,7 +19,7 @@ import MyDatePicker from "@/components/DatePicker";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 registerLocale("es", es);
 
-export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
+export default function NewDoctorModal({ isOpen, onOpenChange }: ModalProps) {
   const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
   const [error, setError] = useState<string>("");
   const { session } = useCustomSession();
