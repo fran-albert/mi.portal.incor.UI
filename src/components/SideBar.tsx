@@ -23,6 +23,7 @@ export default function SideBar() {
   const router = useRouter();
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isDropdownOpenSecretary, setDropdownOpenSecretary] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const { session, status } = useCustomSession();
 
@@ -130,13 +131,60 @@ export default function SideBar() {
               {userRoles.includes("Secretaria") && (
                 <>
                   <li>
-                    <a
-                      onClick={() => router.push("/secretaria")}
-                      className="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group cursor-pointer"
+                    <button
+                      type="button"
+                      className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100"
+                      aria-controls="dropdown-example"
+                      onClick={() =>
+                        setDropdownOpenSecretary(!isDropdownOpenSecretary)
+                      }
+                      data-collapse-toggle="dropdown-example"
                     >
-                      <FaFileMedicalAlt size={25} color="#0f766e" />
-                      <span className="ml-3">Panel Secretaria</span>
-                    </a>
+                      <FaUsers size={25} color="#0f766e" />
+                      <span className="flex-1 ml-3 text-left whitespace-nowrap">
+                        Usuarios
+                      </span>
+                      <svg
+                        className="w-3 h-3"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="m1 1 4 4 4-4"
+                        />
+                      </svg>
+                    </button>
+                    <ul
+                      id="dropdown-example"
+                      className={`${
+                        isDropdownOpenSecretary ? "block" : "hidden"
+                      } py-2 space-y-2`}
+                    >
+                      <li>
+                        <a
+                          onClick={() => router.push("/secretaria/pacientes")}
+                          className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 cursor-pointer"
+                        >
+                          <FaUsers size={25} color="#0f766e" />
+                          <span className="ml-3">Pacientes</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          onClick={() => router.push("/secretaria/medicos")}
+                          className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 cursor-pointer"
+                        >
+                          <FaUsers size={25} color="#0f766e" />
+                          <span className="ml-3">Médicos</span>
+                        </a>
+                      </li>
+                    </ul>
                   </li>
                 </>
               )}
