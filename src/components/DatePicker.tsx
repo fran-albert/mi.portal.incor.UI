@@ -7,13 +7,14 @@ import {
   MyDatePickerProps,
 } from "@/common/interfaces/custom.datepicker.interface";
 
+
 const MyDatePicker = ({ onChange, selectedDate }: MyDatePickerProps) => {
   const ExampleCustomInput = forwardRef<
     HTMLButtonElement,
     ExampleCustomInputProps
   >(({ value, onClick }, ref) => (
     <Button
-      className="w-full p-6 bg-gray-100 border border-gray-100 rounded-xl text-center shadow-lg text-gray-500 font-semibold"
+      className="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-lg ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-800 sm:text-sm sm:leading-6d"
       onClick={(e) => {
         e.preventDefault();
         onClick?.(e);
