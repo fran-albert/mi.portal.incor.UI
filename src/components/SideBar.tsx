@@ -107,7 +107,7 @@ export default function SideBar() {
               <li>
                 <a
                   className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100  group cursor-pointer"
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => router.push("/perfil")}
                 >
                   <FaUser size={25} color="#0f766e" />
                   <span className="flex-1 ml-3 whitespace-nowrap">Perfil</span>
