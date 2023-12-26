@@ -61,7 +61,7 @@ const WelcomeCardComponent: React.FC<WelcomeCardComponentProps> = () => {
               radius="sm"
               src={
                 profile.photo
-                  ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${profile.photo}.jpeg`
+                  ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${profile.photo}`
                   : "https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/default.png"
               }
               className="w-20 h-20"
