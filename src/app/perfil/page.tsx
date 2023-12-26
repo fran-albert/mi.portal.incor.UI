@@ -1,21 +1,20 @@
 "use client";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+
+import SideBar from "@/components/SideBar";
+import UserCardComponent from "./userCard";
 
 const Profile = () => {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <pre>
-        <code>{JSON.stringify(session, null, 2)}</code>
-      </pre>
-    </div>
+    <>
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-64 w-full">
+          <SideBar />
+        </div>
+        <div className="flex-grow">
+          <UserCardComponent />
+        </div>
+      </div>
+    </>
   );
 };
 export default Profile;
