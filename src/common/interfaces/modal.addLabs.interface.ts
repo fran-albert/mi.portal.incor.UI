@@ -3,6 +3,7 @@ export interface ModalProps {
   onOpenChange: (isOpen: boolean) => void;
   paciente?: any;
   doctor?: any;
+  provincias?: any[];
   onLaboratorioAdded?: (lab: any) => void;
   onPacienteRemoved?: (paciente: any) => void;
   onDoctorRemoved?: (doctor: any) => void;
