@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input,
   Button,
 } from "@nextui-org/react";
 import { startOfDay } from "date-fns";
@@ -14,24 +13,26 @@ import "react-datepicker/dist/react-datepicker.css";
 import es from "date-fns/locale/es";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { useSession } from "next-auth/react";
+import { useCustomSession } from "@/context/SessionAuthProviders";
 import { ModalProps } from "@/common/interfaces/modal.addLabs.interface";
-import MyDatePicker from "@/components/DatePicker";
-
-export interface Patient {
-  name: string;
-  email: string;
-  fechaAnalisis: string;
-}
+import { CustomLabel } from "@/components/ui/Label";
+import { CustomInput } from "@/components/ui/Input";
+import { CustomSelect } from "@/components/ui/Select";
 
 registerLocale("es", es);
 
-export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
+export default function NewPatientModal({
+  isOpen,
+  onOpenChange,
+  provincias,
+  onAddPaciente,
+}: ModalProps) {
   const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
-  const { data: session, status } = useSession();
-  const user = session?.user;
+  const { session } = useCustomSession();
   const [error, setError] = useState<string>("");
-  const isoDate = selectedDate.toISOString();
+  const [citiesOptions, setCitiesOptions] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedState, setSelectedState] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -41,8 +42,8 @@ export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
     healthInsurance: "",
     email: "",
     role: ["Paciente"],
-    idCity: 1961,
-    photo: "asdd",
+    idCity: selectedCity,
+    photo: "",
   });
 
   function onCloseModal() {
@@ -61,11 +62,60 @@ export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
       healthInsurance: "",
       email: "",
       role: ["Paciente"],
-      idCity: 1961,
-      photo: "asdd",
+      idCity: selectedCity,
+      photo: "",
     });
     setSelectedDate(startOfDay(new Date()));
   }
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCitiesByState(selectedState);
+    } else {
+      setCitiesOptions([]);
+    }
+  }, [selectedState]);
+
+  const fetchCitiesByState = async (stateId: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/cities/byState/${stateId}`
+      );
+      const cityOptions = response.data.map((city: any) => ({
+        value: city.id.toString(),
+        label: city.city,
+      }));
+      setCitiesOptions(cityOptions);
+    } catch (error) {
+      console.error("Error al cargar las ciudades:", error);
+      setCitiesOptions([]);
+    }
+  };
+
+  const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCity(event.target.value);
+  };
+
+  const statesOptions = provincias
+    ? provincias?.map((provincia) => ({
+        value: provincia.id.toString(),
+        label: provincia.state,
+      }))
+    : [];
+
+  useEffect(() => {
+    if (provincias && provincias.length > 0) {
+      const initialOptions = provincias.map((provincia) => ({
+        value: provincia.id.toString(),
+        label: provincia.state,
+      }));
+      setSelectedState(initialOptions[0].value);
+    }
+  }, [provincias]);
+
+  const handleStateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedState(event.target.value);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,6 +132,7 @@ export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
       ...formData,
       birthDate: selectedDate,
       role: ["Paciente"],
+      idCity: parseInt(selectedCity),
     };
     try {
       const response = await axios.post(
@@ -96,6 +147,9 @@ export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
       );
       if (response.status === 201) {
         toast.success("Paciente agregado con éxito!");
+        if (onAddPaciente) {
+          onAddPaciente(response.data);
+        }
         onCloseModal();
       } else {
         console.error("Error response from server:", response);
@@ -128,78 +182,98 @@ export default function NewPatientModal({ isOpen, onOpenChange }: ModalProps) {
                   {error && <p className="text-red-500">{error}</p>}
                   <div className="flex flex-row">
                     <div className="flex-1 pr-1">
-                      <Input
-                        autoFocus
+                      <CustomLabel htmlFor="name">Nombre</CustomLabel>
+                      <CustomInput
+                        name="name"
+                        type="text"
+                        id="name"
                         value={formData.name}
                         onChange={handleChange}
-                        name="name"
-                        label="Nombre"
-                        required
-                        type="text"
                       />
                     </div>
                     <div className="flex-1 pl-1">
-                      <Input
-                        autoFocus
-                        label="Apellido"
+                      <CustomLabel htmlFor="lastname">Apellido</CustomLabel>
+                      <CustomInput
+                        name="lastname"
+                        id="lastname"
                         value={formData.lastname}
                         onChange={handleChange}
-                        name="lastname"
-                        required
-                        type="text"
                       />
                     </div>
                   </div>
                   <div className="flex flex-row">
                     <div className="flex-1 pr-1">
-                      <Input
-                        autoFocus
-                        label="Teléfono"
-                        type="text"
+                      <CustomLabel htmlFor="phone">Teléfono</CustomLabel>
+                      <CustomInput
                         name="phone"
+                        type="text"
+                        id="phone"
                         value={formData.phone}
                         onChange={handleChange}
                       />
                     </div>
                     <div className="flex-1 pl-1">
-                      <Input
-                        autoFocus
-                        label="D.N.I"
-                        type="number"
+                      <CustomLabel htmlFor="dni">D.N.I</CustomLabel>
+                      <CustomInput
+                        name="dni"
+                        id="dni"
                         value={formData.dni}
                         onChange={handleChange}
-                        name="dni"
                       />
                     </div>
                   </div>
                   <div className="flex flex-row">
                     <div className="flex-1 pr-1">
-                      <Input
-                        label="Correo Electrónico"
-                        type="text"
-                        value={formData.email}
-                        onChange={handleChange}
-                        name="email"
-                        required
+                      <CustomLabel htmlFor="state">
+                        Fecha de Nacimiento
+                      </CustomLabel>
+                      <DatePicker
+                        selected={selectedDate}
+                        locale="es"
+                        dateFormat="dd/MM/yyyy"
+                        onChange={(date: Date | null) => {
+                          if (date) setSelectedDate(date);
+                        }}
                       />
                     </div>
                     <div className="flex-1 pl-1">
-                      <Input
-                        autoFocus
-                        label="Obra Social"
+                      <CustomLabel htmlFor="healthInsurance">
+                        Obra Social
+                      </CustomLabel>
+                      <CustomInput
+                        name="healthInsurance"
+                        id="healthInsurance"
                         type="text"
                         value={formData.healthInsurance}
                         onChange={handleChange}
-                        name="healthInsurance"
-                        required
                       />
                     </div>
                   </div>
-                  <MyDatePicker
-                    selectedDate={selectedDate}
-                    onChange={(date: Date | null) => {
-                      if (date) setSelectedDate(date);
-                    }}
+                  <div className="flex flex-row">
+                    <div className="flex-1 pr-1">
+                      <CustomLabel htmlFor="state">Provincia</CustomLabel>
+                      <CustomSelect
+                        options={statesOptions}
+                        value={selectedState || ""}
+                        onChange={handleStateChange}
+                      />
+                    </div>
+                    <div className="flex-1 pl-1">
+                      <CustomLabel htmlFor="city">Localidad</CustomLabel>
+                      <CustomSelect
+                        options={citiesOptions}
+                        value={selectedCity}
+                        onChange={handleCityChange}
+                      />
+                    </div>
+                  </div>
+                  <CustomLabel htmlFor="email">Correo Electrónico</CustomLabel>
+                  <CustomInput
+                    name="email"
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
                   />
                 </ModalBody>
                 <ModalFooter>
