@@ -36,8 +36,7 @@ export default function UserCardComponent() {
             },
           }
         );
-        console.log("res.data", res.data);
-        setUser(res.data); // Asegúrate de que res.data es el objeto de usuario que esperas
+        setUser(res.data);
         setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
@@ -52,7 +51,6 @@ export default function UserCardComponent() {
 
     if (!user) return;
 
-    // Crear un objeto FormData para enviar tanto archivos como datos de texto
     const formData = new FormData();
     formData.append("name", user.name);
     formData.append("lastname", user.lastname);
