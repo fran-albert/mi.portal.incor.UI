@@ -22,14 +22,14 @@ import { useCustomSession } from "@/context/SessionAuthProviders";
 import Filter from "@/components/Filter";
 import DeletePatientModal from "./deletePatient";
 import NewPatientModal from "./newPatient";
+import EditPatientModal from "./editPatient";
 import AddModalLabs from "./addLabs";
 import { IUser } from "@/common/interfaces/user.interface";
 
 const PacientesTabla = () => {
   const [pacientes, setPacientes] = useState<IUser[]>([]);
-  const [selectedPaciente, setSelectedPaciente] = useState<IUser | null>(
-    null
-  );
+  const [selectedPaciente, setSelectedPaciente] = useState<IUser | null>(null);
+  const [state, setState] = useState<any>({});
   const [totalPatients, setTotalPatients] = useState<number>(0);
   const [filtro, setFiltro] = useState<string>("");
   const itemsPorPagina = 8;
@@ -39,6 +39,7 @@ const PacientesTabla = () => {
   const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
   const [pacientesMostrados, setPacientesMostrados] = useState<IUser[]>([]);
   const [isModalOpenLabs, setIsModalOpenLabs] = useState<boolean>(false);
+  const [isModalOpenEdit, setIsModalOpenEdit] = useState<boolean>(false);
   const totalPages = Math.ceil(totalPatients / itemsPorPagina);
   const [showMessageNotFound, setShowMessageNotFound] =
     useState<boolean>(false);
@@ -49,6 +50,10 @@ const PacientesTabla = () => {
 
     async function fetchData() {
       try {
+        const responseState = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/states`
+        );
+        setState(responseState.data);
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/patients`,
           {
@@ -71,7 +76,7 @@ const PacientesTabla = () => {
 
   const onLaboratorioAddedDummy = (data: any) => {};
 
-  const addPacienteToList = (newPaciente: IUser) => {
+  const addPacienteToList = (newPaciente: any) => {
     setPacientes([...pacientes, newPaciente]);
   };
 
@@ -103,6 +108,15 @@ const PacientesTabla = () => {
 
   const closeModalLabs = () => {
     setIsModalOpenLabs(false);
+  };
+
+  const handleModalOpenEdit = (paciente: IUser) => {
+    setSelectedPaciente(paciente);
+    setIsModalOpenEdit(true);
+  };
+
+  const closeModalEdit = () => {
+    setIsModalOpenEdit(false);
   };
 
   useEffect(() => {
@@ -229,7 +243,7 @@ const PacientesTabla = () => {
                     description={paciente.email}
                     avatarProps={{
                       src: paciente.photo
-                        ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${paciente.photo}.jpeg`
+                        ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${paciente.photo}`
                         : "https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/default.png",
                     }}
                   />
@@ -253,7 +267,9 @@ const PacientesTabla = () => {
                     </Tooltip>
                     <Tooltip content="Editar paciente">
                       <span className="text-3xl text-default-400 cursor-pointer active:opacity-50">
-                        <FaUserEdit />
+                        <FaUserEdit
+                          onClick={() => handleModalOpenEdit(paciente)}
+                        />
                       </span>
                     </Tooltip>
                     <Tooltip color="danger" content="Eliminar paciente">
@@ -286,6 +302,13 @@ const PacientesTabla = () => {
         isOpen={isModalOpen}
         onOpenChange={closeModal}
         onAddPaciente={addPacienteToList}
+        provincias={state}
+      />
+      <EditPatientModal
+        isOpen={isModalOpenEdit}
+        onOpenChange={closeModalEdit}
+        paciente={selectedPaciente}
+        provincias={state}
       />
     </div>
   );
