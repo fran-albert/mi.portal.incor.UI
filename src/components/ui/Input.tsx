@@ -24,7 +24,7 @@ export function CustomInput({ type, icon, ...props }: Props) {
       {type === "password" && (
         <Icon
           size={35}
-          color= "#0d9488"
+          color="#0d9488"
           onClick={togglePasswordVisibility}
           className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
         />
