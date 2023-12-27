@@ -17,6 +17,7 @@ import LoadingPage from "@/components/Loading";
 import { formatearDNI } from "@/common/Utils";
 import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import EditDoctorModal from "./edit.doctor";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import Filter from "@/components/Filter";
 import DeleteDoctorModal from "./eliminar.medico.";
@@ -29,19 +30,27 @@ const MedicosTabla = () => {
   const [totalDoctors, setTotalDoctors] = useState<number>(0);
   const [filtro, setFiltro] = useState<string>("");
   const itemsPorPagina = 8;
+  const [state, setState] = useState<any>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [paginaActual, setPaginaActual] = useState<number>(1);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
   const [shownDoctors, setShownDoctors] = useState<IUser[]>([]);
+  const [isModalOpenEdit, setIsModalOpenEdit] = useState<boolean>(false);
   const totalPages = Math.ceil(totalDoctors / itemsPorPagina);
   const [showMessageNotFound, setShowMessageNotFound] =
     useState<boolean>(false);
   const { session } = useCustomSession();
 
   useEffect(() => {
+    setIsLoading(true);
+
     async function fetchData() {
       try {
+        const responseState = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/states`
+        );
+        setState(responseState.data);
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/doctors`,
           {
@@ -85,6 +94,15 @@ const MedicosTabla = () => {
 
   const closeModalDelete = () => {
     setIsModalOpenDelete(false);
+  };
+
+  const handleModalOpenEdit = (doctor: IUser) => {
+    setSelectedDoctor(doctor);
+    setIsModalOpenEdit(true);
+  };
+
+  const closeModalEdit = () => {
+    setIsModalOpenEdit(false);
   };
 
   useEffect(() => {
@@ -212,7 +230,7 @@ const MedicosTabla = () => {
                     description={doctor.email}
                     avatarProps={{
                       src: doctor.photo
-                        ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${doctor.photo}.jpeg`
+                        ? `https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/${doctor.photo}`
                         : "https://incor-ranking.s3.us-east-1.amazonaws.com/storage/avatar/default.png",
                     }}
                   />
@@ -228,7 +246,9 @@ const MedicosTabla = () => {
                   <div className="relative flex justify-around items-center gap-1">
                     <Tooltip content="Editar médico">
                       <span className="text-3xl text-default-400 cursor-pointer active:opacity-50">
-                        <FaUserEdit />
+                        <FaUserEdit
+                          onClick={() => handleModalOpenEdit(doctor)}
+                        />
                       </span>
                     </Tooltip>
                     <Tooltip color="danger" content="Eliminar médico">
@@ -255,6 +275,12 @@ const MedicosTabla = () => {
         isOpen={isModalOpen}
         onOpenChange={closeModal}
         onAddDoctor={adddoctorToList}
+      />
+      <EditDoctorModal
+        isOpen={isModalOpenEdit}
+        onOpenChange={closeModalEdit}
+        doctor={selectedDoctor}
+        provincias={state}
       />
     </div>
   );
