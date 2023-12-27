@@ -105,16 +105,11 @@ export default function ChangePasswordModal({
                   />
                 </ModalBody>
                 <ModalFooter>
-                  <Button type="submit" className="bg-teal-500">
-                    Confirmar
-                  </Button>
-                  <Button
-                    type="button"
-                    color="danger"
-                    variant="flat"
-                    onPress={onClose}
-                  >
+                  <Button color="danger" variant="light" onPress={onClose}>
                     Cancelar
+                  </Button>
+                  <Button className="bg-teal-500" type="submit">
+                    Confimar
                   </Button>
                 </ModalFooter>
               </form>
