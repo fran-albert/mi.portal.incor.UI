@@ -10,7 +10,7 @@ import {
   FaHome,
 } from "react-icons/fa";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { FiLogOut } from "react-icons/fi";
 import { useCustomSession } from "@/context/SessionAuthProviders";
@@ -26,9 +26,10 @@ export default function SideBar() {
   const [isDropdownOpenSecretary, setDropdownOpenSecretary] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const { session, status } = useCustomSession();
+  const currentPath = usePathname();
 
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (status === "unauthenticated" && currentPath !== "/forgot-password"  && currentPath !== "/reset-password") {
       router.push("/");
     } else if (session?.user?.token) {
       const decoded = jwtDecode<MyTokenPayload>(session.user.token);
