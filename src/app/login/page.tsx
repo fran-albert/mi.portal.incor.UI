@@ -60,7 +60,7 @@ function LoginPage() {
                 />
               </div>
               <div className="flex w-full flex-wrap gap-2">
-                <CustomLabel htmlFor="password">Password</CustomLabel>
+                <CustomLabel htmlFor="password">Contraseña</CustomLabel>
                 <CustomInput
                   type="password"
                   name="password"
