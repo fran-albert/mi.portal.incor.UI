@@ -308,7 +308,7 @@ export default function UserCardComponent() {
           </form>
         </div>
       </div>
-      <ChangePasswordModal isOpen={openModal} onOpenChange={setOpenModal} />
+      <ChangePasswordModal isOpen={openModal} onOpenChange={setOpenModal} user={user} />
     </>
   );
 }
