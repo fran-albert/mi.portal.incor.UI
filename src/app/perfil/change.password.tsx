@@ -13,23 +13,27 @@ import axios, { AxiosError } from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { CustomInput } from "@/components/ui/Input";
 import { CustomLabel } from "@/components/ui/Label";
+import { useCustomSession } from "@/context/SessionAuthProviders";
 
 interface ModalProps {
   isOpen: boolean;
   onOpenChange?: (open: boolean) => void;
+  user: any;
 }
 
 export default function ChangePasswordModal({
   isOpen,
   onOpenChange,
+  user,
 }: ModalProps) {
   const [passwordData, setPasswordData] = useState({
-    password: "",
+    currentPassword: "",
     newPassword: "",
-    confirmnewPassword: "",
+    confirmNewPassword: "",
   });
   const [error, setError] = useState<string>();
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const { session } = useCustomSession();
 
   function onCloseModal() {
     if (onOpenChange) {
@@ -39,23 +43,34 @@ export default function ChangePasswordModal({
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedData = { ...passwordData, [e.target.name]: e.target.value };
-    setPasswordData(updatedData);
+    const { name, value } = e.target;
+    setPasswordData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(passwordData);
     try {
       const response = await axios.post(
-        "/api/auth/change-password",
-        passwordData
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/change-password/${user.id}`,
+        passwordData,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user?.token}`,
+          },
+        }
       );
       toast.success("Contraseña actualizada con éxito!");
-      setOpenModal(false);
+      onCloseModal();
     } catch (error) {
-      // console.error("Error al cambiar la contraseña:", error.response?.data);
-      // setError(error.response?.data.message);
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Error al cambiar la contraseña:", error.response.data);
+        setError(error.response.data.message || "Error desconocido");
+      } else {
+        console.error("Error al cambiar la contraseña:", error);
+      }
       toast.error("Ocurrió un error al cambiar la contraseña.");
     }
   };
@@ -79,18 +94,15 @@ export default function ChangePasswordModal({
                   </CustomLabel>
                   <CustomInput
                     type="password"
-                    name="password"
-                    id="password"
+                    name="currentPassword"
+                    id="currentPassword"
                     onChange={handleChange}
-                    // value={password}
-                    // onChange={(event) => setPassword(event.target.value)}
                   />
                   <CustomLabel htmlFor="password">Nueva contraseña</CustomLabel>
                   <CustomInput
                     type="password"
                     name="newPassword"
                     id="newPassword"
-                    // value={password}
                     onChange={handleChange}
                   />
                   <CustomLabel htmlFor="password">
@@ -98,9 +110,8 @@ export default function ChangePasswordModal({
                   </CustomLabel>
                   <CustomInput
                     type="password"
-                    name="confirmnewPassword"
-                    id="confirmnewPassword"
-                    // value={password}
+                    name="confirmNewPassword"
+                    id="confirmNewPassword"
                     onChange={handleChange}
                   />
                 </ModalBody>
