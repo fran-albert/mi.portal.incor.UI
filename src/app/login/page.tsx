@@ -14,9 +14,7 @@ function LoginPage() {
   const [email, setEmail] = useState("fraan@gmail.com");
   const [password, setPassword] = useState("43282913");
   const router = useRouter();
-  const [isVisible, setIsVisible] = useState(false);
   const { data: session } = useSession();
-  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -95,7 +93,7 @@ function LoginPage() {
             </Button>
             <Divider />
             <div className="text-center">
-              <a href="#" className="text-teal-500 hover:text-teal-600">
+              <a href="/forgot-password" className="text-teal-500 hover:text-teal-600">
                 ¿Has olvidado tu contraseña?
               </a>
             </div>
