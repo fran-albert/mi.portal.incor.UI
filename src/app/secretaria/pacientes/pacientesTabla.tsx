@@ -80,6 +80,19 @@ const PacientesTabla = () => {
     setPacientes([...pacientes, newPaciente]);
   };
 
+  const updatePacienteToList = (pacienteUpdated: any) => {
+    console.log("Actualizando paciente en la lista:", pacienteUpdated);
+    setPacientes(
+      pacientes.map((paciente) =>
+        paciente.id === pacienteUpdated.id ? pacienteUpdated : paciente
+      )
+    );
+  };
+
+  useEffect(() => {
+    console.log("Lista de pacientes actualizada:", pacientes);
+  }, [pacientes]);
+
   const removePacienteFromList = (idPaciente: number) => {
     setPacientes(pacientes.filter((p) => p.id !== idPaciente));
   };
@@ -309,6 +322,7 @@ const PacientesTabla = () => {
         onOpenChange={closeModalEdit}
         paciente={selectedPaciente}
         provincias={state}
+        onPacienteUpdated={updatePacienteToList}
       />
     </div>
   );
