@@ -1,6 +1,6 @@
 "use client";
 import SideBar from "@/components/SideBar";
-import PacientesTabla from "./pacientesTabla";
+import PatientsTable from "./patients.table";
 // import withSessionTimeout from "@/components/withSessionTimeout";
 const SecretariaPage = () => {
   return (
@@ -9,7 +9,7 @@ const SecretariaPage = () => {
         <SideBar />
       </div>
       <div className="flex-grow">
-        <PacientesTabla />
+        <PatientsTable />
       </div>
     </div>
   );
