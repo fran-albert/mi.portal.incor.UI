@@ -1,6 +1,6 @@
 "use client";
 import SideBar from "@/components/SideBar";
-import EstudiosTable from "./estudiosTable";
+import StudiesTable from "./studies.table";
 // import withSessionTimeout from "@/components/withSessionTimeout";
 
 function EstudiosPage() {
@@ -10,7 +10,7 @@ function EstudiosPage() {
         <SideBar />
       </div>
       <div className="flex-grow">
-        <EstudiosTable />
+        <StudiesTable />
       </div>
     </div>
   );
