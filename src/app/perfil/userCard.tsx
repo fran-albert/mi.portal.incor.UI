@@ -1,5 +1,4 @@
 "use client";
-
 import { formatDate, formatearDNI } from "@/common/Utils";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -12,39 +11,80 @@ import { IUser } from "@/common/interfaces/user.interface";
 import { FaCamera } from "react-icons/fa";
 import { CustomInput } from "@/components/ui/Input";
 import { CustomLabel } from "@/components/ui/Label";
+import { CustomSelect } from "@/components/ui/Select";
+import useFetchStates from "@/hooks/useFetchState";
+import useFetchProfile from "@/hooks/useFetchProfile";
 
 export default function UserCardComponent() {
   const [user, setUser] = useState<IUser | undefined>(undefined);
-  const [provincias, setProvincias] = useState([]);
+  const [selectedState, setSelectedState] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [error, setError] = useState(null);
   const { session } = useCustomSession();
-
+  const [citiesOptions, setCitiesOptions] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const { states: provincias, isLoading: isLoadingStates } = useFetchStates(
+    session?.user?.token
+  );
   const [file, setFile] = useState<File | null>(null);
+  const { profile, isLoading: isProfileLoading } = useFetchProfile(
+    session?.user?.token
+  );
 
   useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const res = await axios.get(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${session?.user?.token}`,
-            },
-          }
-        );
-        setUser(res.data);
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-      }
+    if (profile) {
+      setUser(profile);
     }
+  }, [profile]);
 
-    fetchData();
-  }, [session?.user?.token]);
+  const fetchCitiesByState = async (stateId: string) => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/cities/byState/${stateId}`
+      );
+      const cityOptions = response.data.map((city: any) => ({
+        value: city.id.toString(),
+        label: city.city,
+      }));
+      setCitiesOptions(cityOptions);
+    } catch (error) {
+      console.error("Error al cargar las ciudades:", error);
+      setCitiesOptions([]);
+    }
+  };
+
+  useEffect(() => {
+    if (profile && profile.city && profile.city.idState) {
+      const stateId = profile.city.idState.toString();
+      setSelectedState(stateId);
+      fetchCitiesByState(stateId);
+      setSelectedCity(profile.city.id.toString());
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCitiesByState(selectedState);
+      setSelectedCity("");
+    }
+  }, [selectedState]);
+
+  const statesOptions = provincias
+    ? provincias?.map((provincia: any) => ({
+        value: provincia.id.toString(),
+        label: provincia.state,
+      }))
+    : [];
+
+  const handleStateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedState(event.target.value);
+    setSelectedCity("");
+    fetchCitiesByState(event.target.value);
+  };
+
+  const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCity(event.target.value);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,9 +96,6 @@ export default function UserCardComponent() {
     formData.append("lastname", user.lastname);
     formData.append("phone", user.phone);
     formData.append("email", user.email);
-    // formData.append('birthDate', user.birthDate); // Asegúrate de que la fecha esté en el formato adecuado
-
-    // Si la ciudad es un ID o un objeto, ajusta esto según lo que tu backend necesite
     // formData.append('city', user.city.city);
     // formData.append('healthInsurance', user.healthInsurance);
 
@@ -103,10 +140,7 @@ export default function UserCardComponent() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser((currentUser) => {
-      // Si currentUser es undefined, simplemente salimos de la función.
       if (currentUser === undefined) return undefined;
-
-      // De otra manera, actualizamos currentUser asegurándonos de que todas las propiedades necesarias están presentes.
       return {
         ...currentUser,
         [name]: value,
@@ -123,7 +157,7 @@ export default function UserCardComponent() {
     }
   };
 
-  if (isLoading) {
+  if (isLoadingStates || isProfileLoading) {
     return <LoadingPage props="Cargando tu perfil..." />;
   }
 
@@ -131,7 +165,7 @@ export default function UserCardComponent() {
     <>
       <Toaster />
       <div className="flex items-center justify-center p-4 mt-36">
-        <div className="bg-gray-200 p-8 rounded-xl shadow-2xl w-full max-w-2xl">
+        <div className="bg-gray-200/50 p-8 rounded-xl shadow-2xl w-full max-w-2xl">
           <h1 className="text-4xl font-semibold text-center mb-6 text-gray-800">
             Mi Perfil
           </h1>
@@ -257,23 +291,21 @@ export default function UserCardComponent() {
             <div className="flex flex-row">
               <div className="flex-1 pr-1">
                 <div className="mb-2 block">
-                  <CustomLabel htmlFor="city">Localidad</CustomLabel>
-                  <CustomInput
-                    name="city"
-                    id="city"
-                    onChange={handleInputChange}
-                    value={user?.city?.city || ""}
+                  <CustomLabel htmlFor="state">Provincia</CustomLabel>
+                  <CustomSelect
+                    options={statesOptions}
+                    value={selectedState || ""}
+                    onChange={handleStateChange}
                   />
                 </div>
               </div>
               <div className="flex-1 pl-1">
                 <div className="mb-2 block">
-                  <CustomLabel htmlFor="state">Provincia</CustomLabel>
-                  <CustomInput
-                    name="state"
-                    id="state"
-                    onChange={handleInputChange}
-                    value={user?.city?.idState || ""}
+                  <CustomLabel htmlFor="city">Localidad</CustomLabel>
+                  <CustomSelect
+                    options={citiesOptions}
+                    value={selectedCity}
+                    onChange={handleCityChange}
                   />
                 </div>
               </div>
@@ -308,7 +340,11 @@ export default function UserCardComponent() {
           </form>
         </div>
       </div>
-      <ChangePasswordModal isOpen={openModal} onOpenChange={setOpenModal} user={user} />
+      <ChangePasswordModal
+        isOpen={openModal}
+        onOpenChange={setOpenModal}
+        user={user}
+      />
     </>
   );
 }
