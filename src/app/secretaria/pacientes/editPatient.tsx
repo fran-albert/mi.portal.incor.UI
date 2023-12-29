@@ -21,10 +21,24 @@ import { CustomSelect } from "@/components/ui/Select";
 
 registerLocale("es", es);
 
+interface FormData {
+  name: string;
+  lastname: string;
+  phone: string;
+  dni: string;
+  birthDate: Date | null;
+  healthInsurance: string;
+  email: string;
+  role: string[];
+  idCity: string;
+  photo: string;
+}
+
 export default function EditPatientModal({
   isOpen,
   onOpenChange,
   provincias,
+  onPacienteUpdated,
   paciente,
 }: ModalProps) {
   const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
@@ -32,7 +46,7 @@ export default function EditPatientModal({
   const [error, setError] = useState<string>("");
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     lastname: "",
     phone: "",
@@ -53,6 +67,9 @@ export default function EditPatientModal({
   }
 
   function resetForm() {
+    setSelectedDate(startOfDay(new Date()));
+    setSelectedState("");
+    setSelectedCity("");
     setFormData({
       name: "",
       lastname: "",
@@ -62,19 +79,10 @@ export default function EditPatientModal({
       healthInsurance: "",
       email: "",
       role: ["Paciente"],
-      idCity: selectedCity,
+      idCity: "",
       photo: "",
     });
-    setSelectedDate(startOfDay(new Date()));
   }
-
-  useEffect(() => {
-    if (selectedState) {
-      fetchCitiesByState(selectedState);
-    } else {
-      setCitiesOptions([]);
-    }
-  }, [selectedState]);
 
   const fetchCitiesByState = async (stateId: string) => {
     try {
@@ -103,40 +111,57 @@ export default function EditPatientModal({
       }))
     : [];
 
-  useEffect(() => {
-    if (provincias && provincias.length > 0) {
-      const initialOptions = provincias.map((provincia) => ({
-        value: provincia.id.toString(),
-        label: provincia.state,
-      }));
-      setSelectedState(initialOptions[0].value);
-    }
-  }, [provincias]);
-
   const handleStateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedState(event.target.value);
+    setSelectedCity("");
+    fetchCitiesByState(event.target.value);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
+
+  useEffect(() => {
+    if (isOpen && paciente) {
+      const birthDate = paciente.birthDate
+        ? new Date(paciente.birthDate)
+        : new Date();
+      setSelectedDate(birthDate);
+      setSelectedState(paciente.city.idState.toString());
+      setSelectedCity(paciente.city.id.toString());
+      fetchCitiesByState(paciente.city.idState.toString());
+      setFormData({
+        name: paciente.name || "",
+        lastname: paciente.lastname || "",
+        phone: paciente.phone || "",
+        dni: paciente.dni || "",
+        healthInsurance: paciente.healthInsurance || "",
+        email: paciente.email || "",
+        idCity: paciente.city.id.toString() || "",
+        photo: paciente.photo || "",
+        birthDate: birthDate,
+        role: ["Paciente"],
+      });
+    }
+  }, [isOpen, paciente]);
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCitiesByState(selectedState);
+    }
+  }, [selectedState]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const dataToSend = {
       ...formData,
       birthDate: selectedDate,
-      role: ["Paciente"],
       idCity: parseInt(selectedCity),
     };
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users`,
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${paciente?.id}`,
         dataToSend,
         {
           headers: {
@@ -145,23 +170,18 @@ export default function EditPatientModal({
           },
         }
       );
-      if (response.status === 201) {
+      if (response.status === 200) {
+        console.log("Datos actualizados del paciente:", response.data);
         toast.success("Paciente agregado con éxito!");
+        if (onPacienteUpdated) {
+          onPacienteUpdated(response.data);
+        }
         onCloseModal();
       } else {
-        console.error("Error response from server:", response);
         setError("Ocurrió un error al agregar el paciente.");
       }
     } catch (error) {
-      console.error("Exception caught:", error);
-      if (axios.isAxiosError(error) && error.response) {
-        setError(
-          error.response.data.message ||
-            "Ocurrió un error al agregar el paciente."
-        );
-      } else {
-        setError("Ocurrió un error al agregar el paciente.");
-      }
+      setError("Ocurrió un error al agregar el paciente.");
     }
   };
   return (
