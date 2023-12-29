@@ -10,4 +10,5 @@ export interface ModalProps {
   onDoctorRemoved?: (doctor: any) => void;
   onAddPaciente?: (paciente: any) => void;
   onAddDoctor?: (doctor: any) => void;
+  onPacienteUpdated?: (paciente: any) => void;
 }
