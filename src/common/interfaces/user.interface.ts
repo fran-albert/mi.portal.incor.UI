@@ -1,3 +1,5 @@
+import { Estudio } from "./study.interface";
+
 export interface IUser {
   id: number;
   name: string;
@@ -5,7 +7,9 @@ export interface IUser {
   birthDate: string;
   dni: string;
   photo: string;
-  city: {
+  city?: {
+    id: number;
+    idState: number;
     city: string;
   };
   email: string;
@@ -14,4 +18,5 @@ export interface IUser {
   role: Array<{
     role: string;
   }>;
+  labs?: Estudio[];
 }
