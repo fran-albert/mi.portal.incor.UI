@@ -1,12 +1,10 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   FaFileMedicalAlt,
   FaUser,
   FaUsers,
-  FaUserLock,
   FaHome,
 } from "react-icons/fa";
 import { signOut } from "next-auth/react";
@@ -29,7 +27,11 @@ export default function SideBar() {
   const currentPath = usePathname();
 
   useEffect(() => {
-    if (status === "unauthenticated" && currentPath !== "/forgot-password"  && currentPath !== "/reset-password") {
+    if (
+      status === "unauthenticated" &&
+      currentPath !== "/forgot-password" &&
+      currentPath !== "/reset-password"
+    ) {
       router.push("/");
     } else if (session?.user?.token) {
       const decoded = jwtDecode<MyTokenPayload>(session.user.token);
@@ -228,7 +230,9 @@ export default function SideBar() {
                     >
                       <li>
                         <a
-                          onClick={() => router.push("/pacientes")}
+                          onClick={() =>
+                            router.push("/medicos/lista-pacientes")
+                          }
                           className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 cursor-pointer"
                         >
                           <FaUsers size={25} color="#0f766e" />
@@ -239,18 +243,6 @@ export default function SideBar() {
                   </li>
                 </>
               )}
-              {userRoles.includes("Administrador") && (
-                <li>
-                  <a
-                    onClick={() => router.push("/ajustes")}
-                    className="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-gray-100  group cursor-pointer"
-                  >
-                    <FaUserLock size={25} color="#0f766e" />
-                    <span className="ml-3">Panel Admin</span>
-                  </a>
-                </li>
-              )}
-
               <hr />
               <li>
                 <a
