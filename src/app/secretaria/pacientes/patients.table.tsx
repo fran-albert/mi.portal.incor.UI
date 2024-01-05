@@ -10,7 +10,7 @@ import {
   Button,
   Tooltip,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Paginacion from "@/components/Pagination";
 import LoadingPage from "@/components/Loading";
 import { createTableColumns, formatearDNI, stateName } from "@/common/Utils";
@@ -19,12 +19,12 @@ import { FaUserEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import Filter from "@/components/Filter";
-import DeletePatientModal from "./deletePatient";
+import DeletePatientModal from "./delete.patient";
 import NewPatientModal from "./newPatient";
 import useFetchStates from "@/hooks/useFetchState";
 import useFetchPacientes from "@/hooks/useFetchPatients";
 import EditPatientModal from "./edit.patient";
-import AddModalLabs from "./addLabs";
+import AddModalLabs from "./add.modal.labs";
 import { IUser } from "@/common/interfaces/user.interface";
 import useFilterAndPaginate from "@/hooks/useFilterAndPaginate";
 import useModal from "@/hooks/useModal";
@@ -47,6 +47,7 @@ const PatientsTable = () => {
     totalPatients,
     isLoading: isLoadingPacientes,
     addPatientToList,
+    updatePacienteToList,
     removePatientFromList,
   } = useFetchPacientes(session?.user?.token);
   const [filtradosYMostrados, showMessageNotFound] = useFilterAndPaginate(
@@ -59,19 +60,6 @@ const PatientsTable = () => {
   const onLaboratorioAddedDummy = (data: any) => {};
 
   const { isOpen: isModalOpen, openModal, closeModal } = useModal();
-
-  // const updatePacienteToList = (pacienteUpdated: any) => {
-  //   console.log("Actualizando paciente en la lista:", pacienteUpdated);
-  //   setPacientes(
-  //     pacientes.map((paciente) =>
-  //       paciente.id === pacienteUpdated.id ? pacienteUpdated : paciente
-  //     )
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   console.log("Lista de pacientes actualizada:", pacientes);
-  // }, [pacientes]);
 
   const handleModalOpenDelete = (paciente: IUser) => {
     setSelectedPaciente(paciente);
@@ -198,8 +186,8 @@ const PatientsTable = () => {
                   {paciente.healthInsurance}
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base w-60">
-                  {stateName(states, paciente.city.idState)},{" "}
-                  {paciente.city.city}
+                  {paciente.city && stateName(states, paciente.city.idState)},{" "}
+                  {paciente.city?.city}
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base">
                   <div className="relative flex justify-around items-center gap-1">
@@ -255,7 +243,7 @@ const PatientsTable = () => {
         onOpenChange={closeModalEdit}
         paciente={selectedPaciente}
         provincias={states}
-        // onPacienteUpdated={updatePacienteToList}
+        onPatientUpdated={updatePacienteToList}
       />
     </div>
   );
