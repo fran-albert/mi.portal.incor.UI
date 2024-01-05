@@ -4,8 +4,8 @@ import { IUser } from "@/common/interfaces/user.interface";
 
 const useFetchDoctors = (token: any) => {
   const [doctors, setDoctors] = useState<IUser[]>([]);
-  const [totalDoctors, setTotalDoctors] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [totalDoctors, setTotalDoctors] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -39,11 +39,26 @@ const useFetchDoctors = (token: any) => {
     setDoctors([...doctors, newDoctor]);
   };
 
+  const updateDoctorToList = (doctorUpdated: IUser) => {
+    setDoctors(
+      doctors.map((doctor) =>
+        doctor.id === doctorUpdated.id ? doctorUpdated : doctor
+      )
+    );
+  };
+
   const removeDoctorFromList = (idDoctor: number) => {
     setDoctors(doctors.filter((p) => p.id !== idDoctor));
   };
 
-  return { doctors, totalDoctors, isLoading, addDoctorToList, removeDoctorFromList };
+  return {
+    doctors,
+    totalDoctors,
+    isLoading,
+    addDoctorToList,
+    updateDoctorToList,
+    removeDoctorFromList,
+  };
 };
 
 export default useFetchDoctors;
