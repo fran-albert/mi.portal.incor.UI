@@ -43,6 +43,7 @@ const DoctorsTable = () => {
     totalDoctors,
     isLoading: isLoadingDoctors,
     addDoctorToList,
+    updateDoctorToList,
     removeDoctorFromList,
   } = useFetchDoctors(session?.user?.token);
   const totalPages = Math.ceil(totalDoctors / itemsPorPagina);
@@ -191,8 +192,8 @@ const DoctorsTable = () => {
                   {doctor.phone}
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base w-60">
-                  {stateName(states, doctor.city.idState)},{" "}
-                  {doctor.city.city}
+                  {doctor.city && stateName(states, doctor.city.idState)},{" "}
+                  {doctor.city?.city}
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base">
                   <div className="relative flex justify-around items-center gap-1">
@@ -233,6 +234,7 @@ const DoctorsTable = () => {
         onOpenChange={closeModalEdit}
         doctor={selectedDoctor}
         provincias={states}
+        onDoctorUpdated={updateDoctorToList}
       />
     </div>
   );
