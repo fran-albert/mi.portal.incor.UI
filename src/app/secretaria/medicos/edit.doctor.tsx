@@ -18,6 +18,7 @@ import { ModalProps } from "@/common/interfaces/modal.addLabs.interface";
 import { CustomLabel } from "@/components/ui/Label";
 import { CustomInput } from "@/components/ui/Input";
 import { CustomSelect } from "@/components/ui/Select";
+import { IFormData } from "@/common/interfaces/form.data.interface";
 
 registerLocale("es", es);
 
@@ -26,13 +27,14 @@ export default function EditDoctorModal({
   onOpenChange,
   provincias,
   doctor,
+  onDoctorUpdated,
 }: ModalProps) {
   const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
   const { data: session, status } = useSession();
   const [error, setError] = useState<string>("");
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<IFormData>({
     name: "",
     lastname: "",
     phone: "",
@@ -40,7 +42,6 @@ export default function EditDoctorModal({
     birthDate: null,
     healthInsurance: "",
     email: "",
-    role: ["Médico"],
     idCity: selectedCity,
     photo: "",
   });
@@ -61,20 +62,11 @@ export default function EditDoctorModal({
       birthDate: null,
       healthInsurance: "",
       email: "",
-      role: ["Médico"],
       idCity: selectedCity,
       photo: "",
     });
     setSelectedDate(startOfDay(new Date()));
   }
-
-  useEffect(() => {
-    if (selectedState) {
-      fetchCitiesByState(selectedState);
-    } else {
-      setCitiesOptions([]);
-    }
-  }, [selectedState]);
 
   const fetchCitiesByState = async (stateId: string) => {
     try {
@@ -103,27 +95,45 @@ export default function EditDoctorModal({
       }))
     : [];
 
-  useEffect(() => {
-    if (provincias && provincias.length > 0) {
-      const initialOptions = provincias.map((provincia) => ({
-        value: provincia.id.toString(),
-        label: provincia.state,
-      }));
-      setSelectedState(initialOptions[0].value);
-    }
-  }, [provincias]);
-
   const handleStateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedState(event.target.value);
+    setSelectedCity("");
+    fetchCitiesByState(event.target.value);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
+
+  useEffect(() => {
+    if (isOpen && doctor) {
+      const birthDate = doctor.birthDate
+        ? new Date(doctor.birthDate)
+        : new Date();
+      setSelectedDate(birthDate);
+      setSelectedState(doctor.city.idState.toString());
+      setSelectedCity(doctor.city.id.toString());
+      fetchCitiesByState(doctor.city.idState.toString());
+      setFormData({
+        name: doctor.name || "",
+        lastname: doctor.lastname || "",
+        phone: doctor.phone || "",
+        dni: doctor.dni || "",
+        healthInsurance: doctor.healthInsurance || "",
+        email: doctor.email || "",
+        idCity: doctor.city.id.toString() || "",
+        photo: doctor.photo || "",
+        birthDate: birthDate,
+      });
+    }
+  }, [isOpen, doctor]);
+
+  useEffect(() => {
+    if (selectedState) {
+      fetchCitiesByState(selectedState);
+    }
+  }, [selectedState]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -131,12 +141,12 @@ export default function EditDoctorModal({
     const dataToSend = {
       ...formData,
       birthDate: selectedDate,
-      role: ["Médico"],
       idCity: parseInt(selectedCity),
     };
+    console.log(dataToSend);
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users`,
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/${doctor?.id}`,
         dataToSend,
         {
           headers: {
@@ -145,12 +155,14 @@ export default function EditDoctorModal({
           },
         }
       );
-      if (response.status === 201) {
-        toast.success("Paciente agregado con éxito!");
+      if (response.status === 200) {
+        toast.success("Datos actualizados con éxito!");
+        if (onDoctorUpdated) {
+          onDoctorUpdated(response.data);
+        }
         onCloseModal();
       } else {
-        console.error("Error response from server:", response);
-        setError("Ocurrió un error al agregar el paciente.");
+        setError("Ocurrió un error al actualizar el paciente.");
       }
     } catch (error) {
       console.error("Exception caught:", error);
