@@ -8,7 +8,7 @@ const SecretariaPage = () => {
       <div className="md:w-64 w-full">
         <SideBar />
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow ">
         <PatientsTable />
       </div>
     </div>
