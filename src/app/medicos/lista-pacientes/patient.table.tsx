@@ -7,10 +7,9 @@ import {
   TableRow,
   TableCell,
   User,
-  Button,
   Tooltip,
 } from "@nextui-org/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { createTableColumns } from "@/common/Utils";
 import { useRouter } from "next/navigation";
 import Paginacion from "@/components/Pagination";
@@ -20,7 +19,6 @@ import { FaFileMedicalAlt } from "react-icons/fa";
 import { PiSyringeDuotone, PiEye, PiHeartbeatDuotone } from "react-icons/pi";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import Filter from "@/components/Filter";
-import useFetchStates from "@/hooks/useFetchState";
 import useFetchPacientes from "@/hooks/useFetchPatients";
 import { IUser } from "@/common/interfaces/user.interface";
 import { ITableColumn } from "@/common/interfaces/table.column.interface";
@@ -32,9 +30,6 @@ const PatientsTable = () => {
   const [paginaActual, setPaginaActual] = useState<number>(1);
   const nextRouter = useRouter();
   const { session } = useCustomSession();
-  const { states, isLoading: isLoadingStates } = useFetchStates(
-    session?.user?.token
-  );
   const {
     pacientes,
     totalPatients,
@@ -53,7 +48,12 @@ const PatientsTable = () => {
   };
 
   const handlePatientClick = (paciente: IUser, path: string) => {
-    nextRouter.push(`./lista-pacientes/${path}/${paciente.id}`);
+    const id = paciente.id;
+    if (!isNaN(id)) {
+      nextRouter.push(`./lista-pacientes/${path}/${id}`);
+    } else {
+      console.error("El ID del paciente no es un número válido");
+    }
   };
 
   const handlePageChange = (newPage: number) => {
@@ -71,7 +71,7 @@ const PatientsTable = () => {
 
   const columns = createTableColumns(configPacientes);
 
-  if (isLoadingPacientes || isLoadingStates) {
+  if (isLoadingPacientes) {
     return <LoadingPage props={"Cargando pacientes..."} />;
   }
 
@@ -160,7 +160,7 @@ const PatientsTable = () => {
                       <span className="text-3xl text-sky-400 cursor-pointer active:opacity-50">
                         <FaFileMedicalAlt
                           onClick={() =>
-                            handlePatientClick(paciente, "antencedentes")
+                            handlePatientClick(paciente, "antecedentes")
                           }
                         />
                       </span>
