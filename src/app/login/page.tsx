@@ -11,8 +11,8 @@ import { CustomLabel } from "@/components/ui/Label";
 
 function LoginPage() {
   const [errors, setErrors] = useState<string[]>([]);
-  const [email, setEmail] = useState("fraan@gmail.com");
-  const [password, setPassword] = useState("43282913");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
   const { data: session } = useSession();
 
