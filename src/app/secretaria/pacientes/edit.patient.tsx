@@ -18,27 +18,15 @@ import { ModalProps } from "@/common/interfaces/modal.addLabs.interface";
 import { CustomLabel } from "@/components/ui/Label";
 import { CustomInput } from "@/components/ui/Input";
 import { CustomSelect } from "@/components/ui/Select";
+import { IFormData } from "@/common/interfaces/form.data.interface";
 
 registerLocale("es", es);
-
-interface FormData {
-  name: string;
-  lastname: string;
-  phone: string;
-  dni: string;
-  birthDate: Date | null;
-  healthInsurance: string;
-  email: string;
-  role: string[];
-  idCity: string;
-  photo: string;
-}
 
 export default function EditPatientModal({
   isOpen,
   onOpenChange,
   provincias,
-  onPacienteUpdated,
+  onPatientUpdated,
   paciente,
 }: ModalProps) {
   const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
@@ -46,7 +34,7 @@ export default function EditPatientModal({
   const [error, setError] = useState<string>("");
   const [citiesOptions, setCitiesOptions] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<IFormData>({
     name: "",
     lastname: "",
     phone: "",
@@ -54,7 +42,6 @@ export default function EditPatientModal({
     birthDate: null,
     healthInsurance: "",
     email: "",
-    role: ["Paciente"],
     idCity: selectedCity,
     photo: "",
   });
@@ -78,7 +65,6 @@ export default function EditPatientModal({
       birthDate: null,
       healthInsurance: "",
       email: "",
-      role: ["Paciente"],
       idCity: "",
       photo: "",
     });
@@ -141,7 +127,6 @@ export default function EditPatientModal({
         idCity: paciente.city.id.toString() || "",
         photo: paciente.photo || "",
         birthDate: birthDate,
-        role: ["Paciente"],
       });
     }
   }, [isOpen, paciente]);
@@ -171,17 +156,16 @@ export default function EditPatientModal({
         }
       );
       if (response.status === 200) {
-        console.log("Datos actualizados del paciente:", response.data);
-        toast.success("Paciente agregado con éxito!");
-        if (onPacienteUpdated) {
-          onPacienteUpdated(response.data);
+        toast.success("Datos actualizados con éxito!");
+        if (onPatientUpdated) {
+          onPatientUpdated(response.data);
         }
         onCloseModal();
       } else {
-        setError("Ocurrió un error al agregar el paciente.");
+        setError("Ocurrió un error al actualizar el paciente.");
       }
     } catch (error) {
-      setError("Ocurrió un error al agregar el paciente.");
+      setError("Ocurrió un error al actualizar el paciente.");
     }
   };
   return (
