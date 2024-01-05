@@ -4,8 +4,8 @@ import { IUser } from "@/common/interfaces/user.interface";
 
 const useFetchPacientes = (token: any) => {
   const [pacientes, setPacientes] = useState<IUser[]>([]);
-  const [totalPatients, setTotalPatients] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [totalPatients, setTotalPatients] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -34,15 +34,30 @@ const useFetchPacientes = (token: any) => {
     }
   }, [token]);
 
-  const addPatientToList = (newPaciente: any) => {
-    setPacientes([...pacientes, newPaciente]);
+  const addPatientToList = (newPatient: IUser) => {
+    setPacientes((currentPatients) => [...currentPatients, newPatient]);
+  };
+
+  const updatePacienteToList = (pacienteUpdated: IUser) => {
+    setPacientes(
+      pacientes.map((paciente) =>
+        paciente.id === pacienteUpdated.id ? pacienteUpdated : paciente
+      )
+    );
   };
 
   const removePatientFromList = (idPaciente: number) => {
     setPacientes(pacientes.filter((p) => p.id !== idPaciente));
   };
 
-  return { pacientes, totalPatients, isLoading, addPatientToList, removePatientFromList };
+  return {
+    pacientes,
+    totalPatients,
+    isLoading,
+    addPatientToList,
+    updatePacienteToList,
+    removePatientFromList,
+  };
 };
 
 export default useFetchPacientes;
