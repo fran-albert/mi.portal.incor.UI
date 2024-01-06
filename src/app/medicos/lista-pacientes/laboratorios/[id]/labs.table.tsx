@@ -8,7 +8,7 @@ import {
   TableCell,
   Tooltip,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Paginacion from "@/components/Pagination";
 import { createTableColumns, formatDate } from "@/common/Utils";
 import { FaFilePdf } from "react-icons/fa";
@@ -21,7 +21,7 @@ const LabsTable = ({ paciente }: any) => {
   const itemsPorPagina = 4;
   const [paginaActual, setPaginaActual] = useState(1);
   const [estudiosMostrados, setEstudiosMostrados] = useState<Estudio[]>([]);
-  const labs = paciente?.labs || [];
+  const labs = useMemo(() => paciente?.labs || [], [paciente]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const totalLabs = labs.length;
   const totalPages = Math.ceil(totalLabs / itemsPorPagina);
