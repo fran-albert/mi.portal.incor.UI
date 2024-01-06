@@ -37,7 +37,7 @@ export default function SideBar() {
       const decoded = jwtDecode<MyTokenPayload>(session.user.token);
       setUserRoles(decoded.roles || []);
     }
-  }, [session, status, router]);
+  }, [session, status, router, currentPath]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
