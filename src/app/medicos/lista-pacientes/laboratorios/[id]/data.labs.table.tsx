@@ -7,7 +7,7 @@ import {
   TableRow,
   TableCell,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createTableColumns, formatDate } from "@/common/Utils";
 import { ITableColumn } from "@/common/interfaces/table.column.interface";
 import { Estudio } from "@/common/interfaces/study.interface";
@@ -43,8 +43,22 @@ interface Datalab {
   otros: string;
 }
 
+const tiposDePruebas = [
+  "ldh",
+  "lonogramaSangre",
+  "colesterolHdl",
+  "colesterolLdl",
+  "trigliceridos",
+  "uricemia",
+  "bilirrubina",
+  "colinesterasaSerica",
+  "gammaGlutamil",
+  "t4Libre",
+  "otros",
+];
+
 const DataLabsTable = ({ paciente }: any) => {
-  const labs = paciente?.labs || [];
+  const labs = useMemo(() => paciente?.labs || [], [paciente]);
   const [uniqueDates, setUniqueDates] = useState<any[]>([]);
   const [datosEditables, setDatosEditables] = useState<DatosEditables>({});
   const [labDataByDate, setLabDataByDate] = useState<Map<string, any[]>>(
@@ -71,19 +85,6 @@ const DataLabsTable = ({ paciente }: any) => {
     setUniqueDates(Array.from(newLabDataByDate.keys()));
   }, [labs]);
 
-  const tiposDePruebas = [
-    "ldh",
-    "lonogramaSangre",
-    "colesterolHdl",
-    "colesterolLdl",
-    "trigliceridos",
-    "uricemia",
-    "bilirrubina",
-    "colinesterasaSerica",
-    "gammaGlutamil",
-    "t4Libre",
-    "otros",
-  ];
   const columns = [
     { key: "datos", label: "Datos" },
     ...uniqueDates.map((date) => ({ key: date, label: date })),
@@ -152,11 +153,11 @@ const DataLabsTable = ({ paciente }: any) => {
                 {tiposDePruebas.map((prueba) => (
                   <TableRow key={prueba}>
                     <TableCell>{prueba}</TableCell>
-                    {uniqueDates.map((date) => (
+                    {/*{uniqueDates.map((date) => (
                       <TableCell key={`${date}-${prueba}`}>
                         {renderEditableCell(date, prueba)}
                       </TableCell>
-                    ))}
+                    ))} */}
                   </TableRow>
                 ))}
               </TableBody>
