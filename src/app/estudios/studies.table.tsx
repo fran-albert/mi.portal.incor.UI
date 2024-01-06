@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import { FaFilePdf } from "react-icons/fa";
 import { createTableColumns, formatDate } from "@/common/Utils";
@@ -15,29 +15,24 @@ import {
   Tooltip,
 } from "@nextui-org/react";
 import useFetchProfile from "@/hooks/useFetchProfile";
-import { Estudio } from "@/common/interfaces/study.interface";
 import { ITableColumn } from "@/common/interfaces/table.column.interface";
 
 export default function StudiesTable() {
   const itemsPorPagina = 10;
   const [paginaActual, setPaginaActual] = useState(1);
-  const [estudiosMostrados, setEstudiosMostrados] = useState<Estudio[]>([]);
   const { session } = useCustomSession();
   const { profile, isLoading: isProfileLoading } = useFetchProfile(
     session?.user?.token
   );
-  const estudios = profile?.labs || [];
+  const estudios = useMemo(() => profile?.labs || [], [profile]);
   const totalEstudios = estudios.length;
   const totalPages = Math.ceil(totalEstudios / itemsPorPagina);
 
-  useEffect(() => {
+  const estudiosMostrados = useMemo(() => {
     const indiceDelUltimoEstudio = paginaActual * itemsPorPagina;
     const indiceDelPrimerEstudio = indiceDelUltimoEstudio - itemsPorPagina;
-
-    setEstudiosMostrados(
-      estudios.slice(indiceDelPrimerEstudio, indiceDelUltimoEstudio)
-    );
-  }, [paginaActual, estudios]);
+    return estudios.slice(indiceDelPrimerEstudio, indiceDelUltimoEstudio);
+  }, [paginaActual, estudios, itemsPorPagina]);
 
   const configStudies: ITableColumn[] = [
     { key: "#", label: "#" },
@@ -106,7 +101,7 @@ export default function StudiesTable() {
                           <Tooltip content="Ver PDF">
                             <span className="text-3xl cursor-pointer active:opacity-50">
                               <a
-                                href={`https://incor-ranking.s3.us-east-1.amazonaws.com/storage/laboratorios/${estudio.archivo}.pdf`}
+                                href={`https://incor-ranking.s3.us-east-1.amazonaws.com/storage/laboratorios/${estudio.file}.pdf`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
