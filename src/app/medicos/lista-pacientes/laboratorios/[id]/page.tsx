@@ -27,7 +27,7 @@ function LabsPatientPage({ params }: { params: any }) {
               <LabsTable paciente={user} />
             </div>
             <div className="w-full">
-              <DataLabsTable paciente={user} />
+              {/* <DataLabsTable paciente={user} /> */}
             </div>
           </div>
         </main>
