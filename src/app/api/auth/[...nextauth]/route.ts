@@ -36,25 +36,12 @@ const handler = NextAuth({
       session.user = token as any;
       return session;
     },
-    async redirect({
-      url,
-      baseUrl,
-    }: {
-      url: string;
-      baseUrl: string;
-    }): Promise<string> {
-      console.log("Redirecting...", {
-        url,
-        baseUrl,
-        envBaseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-      });
-
+    async redirect({ url, baseUrl }) {
+      console.log(url, baseUrl, "redirect")
       if (url.startsWith(baseUrl + "/api/auth/signout")) {
-        return process.env.NEXT_PUBLIC_BASE_URL || baseUrl; // Asegúrate de que esto siempre devuelva una string
+        return process.env.NEXT_PUBLIC_BASE_URL || baseUrl;
       }
-
-      // Devuelve un valor por defecto en caso de que no se cumpla la condición anterior
-      return baseUrl;
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   pages: {
