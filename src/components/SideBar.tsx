@@ -1,12 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import {
-  FaFileMedicalAlt,
-  FaUser,
-  FaUsers,
-  FaHome,
-} from "react-icons/fa";
+import { FaFileMedicalAlt, FaUser, FaUsers, FaHome } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
@@ -103,7 +98,7 @@ export default function SideBar() {
                   className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100  group cursor-pointer"
                   onClick={() => router.push("/home")}
                 >
-                  <FaHome size={25} color="#0f766e" />
+                  <FaHome size={25} color="#0d9488" />
                   <span className="flex-1 ml-3 whitespace-nowrap">Inicio</span>
                 </a>
               </li>
@@ -112,7 +107,7 @@ export default function SideBar() {
                   className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100  group cursor-pointer"
                   onClick={() => router.push("/perfil")}
                 >
-                  <FaUser size={25} color="#0f766e" />
+                  <FaUser size={25} color="#0d9488" />
                   <span className="flex-1 ml-3 whitespace-nowrap">Perfil</span>
                 </a>
               </li>
@@ -124,7 +119,7 @@ export default function SideBar() {
                       onClick={() => router.push("/estudios")}
                       className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group cursor-pointer"
                     >
-                      <FaFileMedicalAlt size={25} color="#0f766e" />
+                      <FaFileMedicalAlt size={25} color="#0d9488" />
                       <span className="ml-3">Estudios</span>
                     </a>
                   </li>
@@ -143,7 +138,7 @@ export default function SideBar() {
                       }
                       data-collapse-toggle="dropdown-example"
                     >
-                      <FaUsers size={25} color="#0f766e" />
+                      <FaUsers size={25} color="#0d9488" />
                       <span className="flex-1 ml-3 text-left whitespace-nowrap">
                         Usuarios
                       </span>
@@ -174,7 +169,7 @@ export default function SideBar() {
                           onClick={() => router.push("/secretaria/pacientes")}
                           className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 cursor-pointer"
                         >
-                          <FaUsers size={25} color="#0f766e" />
+                          <FaUsers size={25} color="#0d9488" />
                           <span className="ml-3">Pacientes</span>
                         </a>
                       </li>
@@ -183,7 +178,7 @@ export default function SideBar() {
                           onClick={() => router.push("/secretaria/medicos")}
                           className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 cursor-pointer"
                         >
-                          <FaUsers size={25} color="#0f766e" />
+                          <FaUsers size={25} color="#0d9488" />
                           <span className="ml-3">Médicos</span>
                         </a>
                       </li>
@@ -202,7 +197,7 @@ export default function SideBar() {
                       onClick={() => setDropdownOpen(!isDropdownOpen)}
                       data-collapse-toggle="dropdown-example"
                     >
-                      <FaUsers size={25} color="#0f766e" />
+                      <FaUsers size={25} color="#0d9488" />
                       <span className="flex-1 ml-3 text-left whitespace-nowrap">
                         Mis Pacientes
                       </span>
@@ -235,7 +230,7 @@ export default function SideBar() {
                           }
                           className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 cursor-pointer"
                         >
-                          <FaUsers size={25} color="#0f766e" />
+                          <FaUsers size={25} color="#0d9488" />
                           <span className="ml-3">Lista de Pacientes</span>
                         </a>
                       </li>
