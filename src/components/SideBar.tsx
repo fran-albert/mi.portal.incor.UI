@@ -241,9 +241,13 @@ export default function SideBar() {
               <hr />
               <li>
                 <a
-                  onClick={() =>
-                    signOut({ callbackUrl: process.env.NEXT_PUBLIC_BASE_URL })
-                  }
+                  onClick={() => {
+                    console.log(
+                      "Signing out, redirecting to:",
+                      process.env.NEXT_PUBLIC_BASE_URL
+                    );
+                    signOut({ callbackUrl: process.env.NEXT_PUBLIC_BASE_URL });
+                  }}
                   className="flex items-center p-2 text-gray-900 rounded-lg  hover:bg-red-100  group cursor-pointer"
                 >
                   <FiLogOut size={25} />
