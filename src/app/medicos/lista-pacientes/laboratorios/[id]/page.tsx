@@ -5,6 +5,7 @@ import { useCustomSession } from "@/context/SessionAuthProviders";
 import useFetchUser from "@/hooks/useFetchUser";
 import LoadingPage from "@/components/Loading";
 import DataLabsTable from "./data.labs.table";
+import HeaderPatient from "@/components/ui/Header";
 // import withSessionTimeout from "@/components/withSessionTimeout";
 function LabsPatientPage({ params }: { params: any }) {
   const idPatient = parseInt(params.id);
@@ -16,17 +17,18 @@ function LabsPatientPage({ params }: { params: any }) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row ">
-      <div className="md:w-64 w-full">
+    <div className="flex flex-col md:flex-row">
+      <div className="md:w-48 w-full">
         <SideBar />
       </div>
-      <div className="flex-grow mt-32 ">
-        <main className="flex-grow p-4 flex justify-center">
-          <div className="w-full flex flex-col items-center">
-            <div className="w-full mb-4">
+      <div className="flex-grow">
+        <HeaderPatient user={user} />
+        <main className="p-4 flex justify-center">
+          <div className="flex flex-col items-center w-full">
+            <div className="w-auto lg:w-4/5">
               <LabsTable paciente={user} />
             </div>
-            <div className="w-full">
+            <div className="w-auto lg:w-4/5">
               {/* <DataLabsTable paciente={user} /> */}
             </div>
           </div>
