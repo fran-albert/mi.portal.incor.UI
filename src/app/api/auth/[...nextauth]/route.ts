@@ -37,7 +37,6 @@ const handler = NextAuth({
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log(url, baseUrl, "redirect")
       if (url.startsWith(baseUrl + "/api/auth/signout")) {
         return process.env.NEXT_PUBLIC_BASE_URL || baseUrl;
       }
