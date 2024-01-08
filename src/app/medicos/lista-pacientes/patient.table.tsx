@@ -147,15 +147,6 @@ const PatientsTable = () => {
                 </TableCell>
                 <TableCell className="py-3 text-gray-900 text-base">
                   <div className="relative flex justify-around items-center gap-1">
-                    <Tooltip content="Detalles">
-                      <span className="text-3xl text-default-400 cursor-pointer active:opacity-50">
-                        <PiEye
-                          onClick={() =>
-                            handlePatientClick(paciente, "dashboard")
-                          }
-                        />
-                      </span>
-                    </Tooltip>
                     <Tooltip content="Antecedentes">
                       <span className="text-3xl text-sky-400 cursor-pointer active:opacity-50">
                         <FaFileMedicalAlt
