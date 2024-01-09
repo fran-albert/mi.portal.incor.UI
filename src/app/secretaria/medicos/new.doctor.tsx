@@ -131,7 +131,7 @@ export default function NewDoctorModal({
       ...formData,
       birthDate: selectedDate,
       role: ["Médico"],
-      idCity: parseInt(selectedCity),
+      idCity: parseInt(selectedCity).toString(),
     };
     try {
       const response = await axios.post(
