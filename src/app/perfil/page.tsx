@@ -8,6 +8,7 @@ import { useCustomSession } from "@/context/SessionAuthProviders";
 import useFetchStates from "@/hooks/useFetchState";
 import useFetchProfile from "@/hooks/useFetchProfile";
 import axios from "axios";
+import withSessionTimeout from "@/components/WithSessionTimeout";
 
 const Profile = () => {
   const [user, setUser] = useState<IUser | undefined>(undefined);
@@ -46,4 +47,4 @@ const Profile = () => {
     </>
   );
 };
-export default Profile;
+export default withSessionTimeout(Profile);
