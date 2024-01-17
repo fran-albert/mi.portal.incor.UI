@@ -1,7 +1,7 @@
 "use client";
 import SideBar from "@/components/SideBar";
 import StudiesTable from "./studies.table";
-// import withSessionTimeout from "@/components/withSessionTimeout";
+import withSessionTimeout from "@/components/WithSessionTimeout";
 
 function EstudiosPage() {
   return (
@@ -16,5 +16,4 @@ function EstudiosPage() {
   );
 }
 
-// export default withSessionTimeout(EstudiosPage);
-export default EstudiosPage;
+export default withSessionTimeout(EstudiosPage);
