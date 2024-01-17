@@ -1,7 +1,7 @@
 "use client";
 import SideBar from "@/components/SideBar";
 import DoctorsTable from "./doctors.table";
-// import withSessionTimeout from "@/components/withSessionTimeout";
+import withSessionTimeout from "@/components/WithSessionTimeout";
 const SecretariaPage = () => {
   return (
     <div className="flex flex-col md:flex-row">
@@ -15,5 +15,4 @@ const SecretariaPage = () => {
   );
 };
 
-// export default withSessionTimeout(SecretariaPage);
-export default SecretariaPage;
+export default withSessionTimeout(SecretariaPage);
