@@ -24,7 +24,7 @@ function HistoryPatientPage({ params }: { params: any }) {
         <main className="flex-grow p-4 flex justify-center">
           <div className="flex flex-col items-center">
             <div className="w-full">
-              <p className="text-center">Contenido de la página...</p>
+              <HistoryUser paciente={user} />
             </div>
           </div>
         </main>
