@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Divider,
-  Avatar,
-  Image,
-} from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Divider, Avatar } from "@nextui-org/react";
 import { useCustomSession } from "@/context/SessionAuthProviders";
 import { FaHeartbeat, FaSmile } from "react-icons/fa";
 import axios from "axios";
+import LoadingPage from "@/components/Loading";
 
 interface User {
   email: string;
@@ -30,10 +23,12 @@ interface Profile {
 const WelcomeCardComponent: React.FC<WelcomeCardComponentProps> = () => {
   const { session } = useCustomSession();
   const [profile, setProfile] = useState<Profile>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true);
         const res = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile`,
           {
@@ -45,11 +40,17 @@ const WelcomeCardComponent: React.FC<WelcomeCardComponentProps> = () => {
         setProfile(res.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
     fetchData();
   }, [session?.user?.token]);
+
+  if (isLoading) {
+    return <LoadingPage props={"Cargando..."} />;
+  }
 
   return (
     <>
