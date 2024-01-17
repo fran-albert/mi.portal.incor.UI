@@ -2,8 +2,9 @@
 import { useSession } from "next-auth/react";
 import SideBar from "@/components/SideBar";
 import WelcomeCardComponent from "./welcomeCard";
+import withSessionTimeout from "@/components/WithSessionTimeout";
 
-export default function HomePage() {
+function HomePage() {
   const { data: session, status } = useSession();
   const user = session?.user;
   return (
@@ -21,4 +22,6 @@ export default function HomePage() {
     </>
   );
 }
+
+export default withSessionTimeout(HomePage);
 
