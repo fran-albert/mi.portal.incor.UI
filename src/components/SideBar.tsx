@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { FiLogOut } from "react-icons/fi";
 import { useCustomSession } from "@/context/SessionAuthProviders";
+import AutoSignOut from "./autoSignOut";
 
 interface MyTokenPayload {
   roles: string[];
@@ -40,6 +41,7 @@ export default function SideBar() {
 
   return (
     <>
+      <AutoSignOut />
       <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 py-4">
         <div className="px-3 py-3 lg:px-5 lg:pl-3">
           <div className="flex items-center justify-between">
